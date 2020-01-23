@@ -13,11 +13,10 @@ podTemplate(
     def REPOS
     def IMAGE_VERSION
     def IMAGE_POSFIX = ""
-    def KUBE_NAMESPACE
     def IMAGE_NAME = "questcode-backend-scm"
     def APP_NAME = "questcode-backend-scm"
+    def KUBE_NAMESPACE
     def ENVIRONMENT
-    def GIT_REPOS_URL = "https://github.com/wfsiqueira/questcode-backend-scm.git"
     def GIT_BRANCH 
     def HELM_CHART_NAME = "questcode/questcode-backend-scm"
     def HELM_DEPLOY_NAME
@@ -38,12 +37,12 @@ podTemplate(
                 KUBE_NAMESPACE = "staging"
                 ENVIRONMENT = "staging"
                 IMAGE_POSFIX = "-RC"
-                INGRESS_HOST = ENVIRONMENT + "." + INGRESS_HOST
+                INGRESS_HOST = ENVIRONMENT + "." + ENVIRONMENT
             } else if (GIT_BRANCH.equals("qa")) {
                 KUBE_NAMESPACE = "qa"
-                ENVIRONMENT = "qa"
+                ENVIRONMENT = "staging"
                 IMAGE_POSFIX = "-QA"
-                INGRESS_HOST = ENVIRONMENT + "." + INGRESS_HOST
+                INGRESS_HOST = ENVIRONMENT + "." + ENVIRONMENT
             } else {
                 def error = "Nao existe pipeline para a branch ${GIT_BRANCH}"
                 echo error
@@ -58,10 +57,9 @@ podTemplate(
                 echo 'Iniciando empacotamento com Docker'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USER')]) {
                     sh "docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}"
-                    sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_VERSION} ."
+                    sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_VERSION} . --build-arg NPM_ENV='${ENVIRONMENT}'"
                     sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_VERSION}"
                 }
-
             }
         }
         stage('Deploy') {

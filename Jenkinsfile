@@ -55,9 +55,9 @@ podTemplate(
     def ENVIRONMENT
     def GIT_REPOS_URL = "https://github.com/wfsiqueira/questcode-backend-scm.git"
     def GIT_BRANCH 
-    def HELM_CHART_NAME = "questcode/backend-scm"
+    def HELM_CHART_NAME = "questcode/questcode-backend-scm"
     def HELM_DEPLOY_NAME
-    def CHARTMUSEUM_URL = "http://helm-chartmuseum:8080"
+    def CHARTMUSEUM_URL = "http://questcode-repo-chartmuseum:8080"
     def INGRESS_HOST = "questcode.org"
 
     // Start Pipeline
